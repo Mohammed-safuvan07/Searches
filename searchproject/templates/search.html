@@ -1,0 +1,33 @@
+<!-- search.html -->
+<form method="GET" action="{% url 'search_view' %}">
+    {{ form.as_p }}
+    <button type="submit">Search</button>
+</form>
+
+<ul id="results">
+    {% for country in countries %}
+        <li>{{ country.name }} (Capital: {{ country.capital }})</li>
+    {% empty %}
+        <li>No results found.</li>
+    {% endfor %}
+</ul>
+
+<script>
+// JavaScript to handle the autocomplete feature
+document.querySelector('input[name="query"]').addEventListener('input', function() {
+    let query = this.value;
+    if (query.length > 2) {
+        fetch(`/search/?query=${query}`, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+            .then(response => response.json())
+            .then(data => {
+                let resultsList = document.getElementById('results');
+                resultsList.innerHTML = '';
+                data.forEach(item => {
+                    let li = document.createElement('li');
+                    li.textContent = `${item.name} (Capital: ${item.capital})`;
+                    resultsList.appendChild(li);
+                });
+            });
+    }
+});
+</script>
